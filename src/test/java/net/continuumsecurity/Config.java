@@ -19,6 +19,9 @@
 package net.continuumsecurity;
 
 import edu.umass.cs.benchlab.har.HarEntry;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyObject;
+import groovy.lang.MetaMethod;
 import net.continuumsecurity.scanner.ZapManager;
 import net.continuumsecurity.web.Application;
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -45,21 +48,21 @@ public class Config {
 
     public Application createApp() {
         Object app = null;
+        String fileName = "";
         try {
-	       ClassLoader parent = EmbeddedGroovy.class.getClassLoader();
-  		GroovyClassLoader loader = new GroovyClassLoader(parent);
-		String fileName = Config.getInstance().getAppDefinition();
-		log.warning(fileName);
-               if(fileName==“”){
-			fileName = “./AppDefinition.groovy”;
-		}
-  		Class helloGroovyClass = loader.parseClass(new File(fileName));
-  		GroovyObject groovyObject = (GroovyObject) helloGroovyClass.newInstance();
-  		Object[] arguments = {};
-  		String nameClass = (String)groovyObject.invokeMethod(“getNameClass”, arguments);
-            	Class appClass = Class.forName(nameClass);
-            	app = appClass.newInstance();
-            	return (Application) app;
+
+            ClassLoader parent = Config.class.getClassLoader();
+            GroovyClassLoader loader = new GroovyClassLoader(parent);
+            fileName = Config.getInstance().getAppDefinition();
+            log.warning(fileName);
+            if(fileName==""){
+                fileName = "./AppDefinition.groovy";
+            }
+            Class groovyClass = loader.parseClass(new File(fileName));
+
+            GroovyObject groovyObject = (GroovyObject) groovyClass.newInstance();
+
+            	return (Application) groovyObject;
         } catch (Exception e) {
             log.warning("Error instantiating the class defined in config.xml");
             e.printStackTrace();
@@ -82,7 +85,7 @@ public class Config {
     }
 
     public String getAppDefinition() {
-	   return validateAndGetString(“AppDefinition”);
+	   return validateAndGetString("AppDefinition");
  	}
 
     public  Users getUsers() {
