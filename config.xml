@@ -13,7 +13,7 @@
     <baseUrl>http://localhost:8080/</baseUrl>
 
     <!-- A Java class to hold the Selenium steps to test the application in depth. Optionally required for in-depth authn/z and session management testing. -->
-    <AppDefinition>./AppDefinition<AppDefinition/>
+    <AppDefinition>./AppDefinition.groovy</AppDefinition>
 
     <sslyze>/opt/sslyze/sslyze.py --regular</sslyze>
 
@@ -24,7 +24,7 @@
 
     <!-- the default user to use when logging in to the app for most of the functional requirements -->
     <users>
-        <user username="bob" password="password"/>
+        <user username="bob" password="password"/>s
     </users>
 
     <scanner>

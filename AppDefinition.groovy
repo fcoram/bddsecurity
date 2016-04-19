@@ -1,20 +1,26 @@
+/**
+ * Created by francisco on 19/4/16.
+ */
 package main
 
-class AppDefinition {
- public AppDefinition() {
-  super();
+@Grab('org.seleniumhq.selenium:selenium-htmlunit-driver:2.8.0')
+@Grab('org.seleniumhq.selenium:selenium-java:2.8.0')
+@GrabExclude('xml-apis:xml-apis')
+import org.openqa.selenium.By
+import net.continuumsecurity.Config;
+import net.continuumsecurity.Credentials;
+import net.continuumsecurity.UserPassCredentials;
 
- }
+class AppDefinition extends Script {
 
- @Override
- public void openLoginPage() {
+ def openLoginPage() {
   driver.get(Config.getInstance().getBaseUrl() + "user/login");
   findAndWaitForElement(By.id("username"));
  }
 
- @Override
- public void login(Credentials credentials) {
-  UserPassCredentials creds = new UserPassCredentials(credentials);
+
+ def login(Credentials credentials) {
+  def creds = new UserPassCredentials(credentials);
   driver.findElement(By.id("username")).clear();
   driver.findElement(By.id("username")).sendKeys(creds.getUsername());
   driver.findElement(By.id("password")).clear();
@@ -22,14 +28,14 @@ class AppDefinition {
   driver.findElement(By.name("_action_login")).click();
  }
 
- // Convenience method
- public void login(String username, String password) {
+
+ def login(String username, String password) {
   login(new UserPassCredentials(username, password));
  }
 
- @Override
- public boolean isLoggedIn() {
-  driver.get(Config.getInstance().getBaseUrl()+"task/list");
+
+ def isLoggedIn() {
+  driver.get(Config.getInstance().getBaseUrl() + "task/list");
   if (driver.getPageSource().contains("Tasks")) {
    return true;
   } else {
@@ -37,35 +43,42 @@ class AppDefinition {
   }
  }
 
- public void viewProfile() {
+ def viewProfile() {
   driver.findElement(By.linkText("Profile")).click();
  }
 
- public void viewAlicesProfile() {
+ def viewAlicesProfile() {
   viewProfile();
  }
 
- public void viewBobsProfile() {
+ def viewBobsProfile() {
   viewProfile();
  }
 
- @Override
- public void logout() {
+
+ def logout() {
   driver.findElement(By.linkText("Logout")).click();
  }
 
- public void search(String query) {
+ def search(String query) {
   findAndWaitForElement(By.linkText("Tasks")).click();
   driver.findElement(By.id("q")).clear();
   driver.findElement(By.id("q")).sendKeys(query);
   driver.findElement(By.id("search")).click();
  }
 
- public void viewAllUsers() {
+ def viewAllUsers() {
   driver.get(Config.getInstance().getBaseUrl() + "admin/list");
  }
 
- public void navigate() {
+ def run() {
+  openLoginPage();
+  login(Config.getInstance().getUsers().getDefaultCredentials());
+  viewProfile();
+  search("test");
+ }
+
+ def navigate() {
   openLoginPage();
   login(Config.getInstance().getUsers().getDefaultCredentials());
   viewProfile();
